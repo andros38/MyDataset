@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MyDataset Capture</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>MyDataset Capture</h1>
+        
+      </div>
+      <div id="captureBadge" class="badge idle">Tidak aktif</div>
+    </header>
+
+    <section class="card source-card">
+      <div class="section-head">
+        <div><h2>Sumber aktif</h2></div>
+        <button id="refreshSourceBtn" class="secondary" type="button">Perbarui</button>
+      </div>
+      <div class="grid-two">
+        <label>Platform
+          <input id="platformName" value="-" readonly>
+        </label>
+        <label>Endpoint utama
+          <input id="endpointName" value="-" readonly>
+        </label>
+      </div>
+      <label>Source URL
+        <input id="sourceUrl" type="url" spellcheck="false" readonly>
+      </label>
+      <div class="source-meta"><b id="pageTitle">Belum dibaca</b><span id="sourceHost">-</span></div>
+      <div id="unsupportedNotice" class="empty hidden">Platform belum didukung. Gunakan HAR Chrome.</div>
+    </section>
+
+    <section class="card capture-card">
+      <div class="grid-two">
+        <label>Mode Capture
+          <input value="Otomatis" readonly>
+        </label>
+        <label class="check-row"><input id="successOnly" type="checkbox" checked> Hanya status 2xx</label>
+      </div>
+      
+      <div class="actions">
+        <button id="captureBtn" class="primary" type="button">Mulai Capture</button>
+        <button id="scanBtn" type="button">Pindai Network Saat Ini</button>
+        <button id="clearBtn" class="secondary" type="button">Kosongkan</button>
+        <button id="savePackageBtn" class="success" type="button" disabled>Simpan Paket Capture (.zip)</button>
+        <button id="saveJsonBtn" class="secondary" type="button" disabled>Simpan JSON Capture</button>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Ringkasan capture">
+      <div><span>Response</span><b id="responseCount">0</b></div>
+      <div><span>Record mentah</span><b id="rawReviewCount">0</b></div>
+      <div><span>Review unik</span><b id="uniqueReviewCount">0</b></div>
+      <div><span>Duplikat</span><b id="duplicateReviewCount">0</b></div>
+      <div><span>Pagination</span><b id="paginationState">-</b></div>
+      <div><span>Status</span><b id="statusText">Siap</b></div>
+    </section>
+
+    <section class="card results-card">
+      <div class="section-head"><div><h2>Response tertangkap</h2></div></div>
+      <div id="emptyState" class="empty">Belum ada response.</div>
+      <div class="table-wrap">
+        <table id="resultTable" class="hidden">
+          <thead><tr><th># / File raw</th><th>Waktu</th><th>Request</th><th>Status</th><th>Raw</th><th>Unik baru</th><th>Duplikat</th><th>Terminal</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>Traveloka · Tiket</footer>
+  </main>
+  <script src="capture-core.js"></script>
+  <script src="capture-export.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

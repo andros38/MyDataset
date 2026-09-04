@@ -1,0 +1,54 @@
+{
+  "name": "mydataset",
+  "version": "1.1.6",
+  "description": "Aplikasi desktop Electron untuk mengumpulkan, membersihkan, mengaudit, menggabungkan, dan mengekspor data review web menjadi dataset terstruktur.",
+  "main": "src/main.js",
+  "author": "Ahmad Asyhari",
+  "license": "MIT",
+  "keywords": [
+    "electron",
+    "dataset",
+    "web-review",
+    "har",
+    "dom-scraping",
+    "research"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build:win": "electron-builder --win portable --x64",
+    "dist:win": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "43.3.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "id.mydataset.desktop",
+    "productName": "MyDataset",
+    "asar": true,
+    "artifactName": "MyDataset-v${version}-Windows-x64.${ext}",
+    "files": [
+      "src/**/*",
+      "README.md",
+      "LICENSE"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

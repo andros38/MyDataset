@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyDataset</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="dark">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand" title="MyDataset">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div class="brand-copy"><strong id="brandName">MyDataset</strong><span id="brandMeta">Ahmad Asyhari · v1.1.6</span></div>
+      </div>
+      <div class="top-actions">
+        <details id="projectMenu" class="toolbar-menu menu-moved" aria-hidden="true">
+          <summary>Proyek <span class="menu-chevron" aria-hidden="true"></span></summary>
+          <div class="toolbar-menu-popover">
+            <button id="newProjectBtn" type="button"><b>Proyek Baru</b><small>Mulai rancangan kosong</small></button>
+            <button id="openBtn" type="button"><b>Buka Proyek…</b><small>Muat file .loom.json</small></button>
+            <button id="saveAsBtn" type="button"><b>Simpan Sebagai…</b><small>Buat salinan proyek</small></button>
+            <button id="topWorkspaceBtn" type="button"><b>Buka Folder</b><small>Data hasil objek aktif</small></button>
+            <button id="resetBtn" type="button" class="menu-danger"><b>Bersihkan…</b><small>Hasil sesi atau seluruh proyek</small></button>
+          </div>
+        </details>
+        <button id="pauseBtn" class="warning hidden">Jeda</button>
+      </div>
+    </header>
+
+    <nav class="workspace-tabs" aria-label="Area kerja">
+      <button class="workspace-tab active" data-view="browserView">Mengatur Data</button>
+      <button class="workspace-tab" data-view="dataView">Lihat Hasil</button>
+      <button class="workspace-tab" data-view="historyView">Riwayat</button>
+      <div class="tab-spacer"></div>
+      <span id="projectModePill" class="ui-internal" aria-hidden="true">HAR / Network</span><button id="toggleLeftPanelBtn" class="panel-toggle menu-moved" type="button" aria-pressed="true" title="Tampilkan/sembunyikan panel proyek">Proyek</button>
+    </nav>
+
+    <main class="workspace">
+      <aside class="sidebar left-panel" aria-label="Persiapan pengaturan data">
+        <div class="panel-title"><span>Persiapan</span></div>
+
+        <section class="card acquisition-card">
+          <div class="step-head"><span class="step-number">1</span><div><b>Sumber data</b></div></div>
+          <label>Metode Akuisisi
+            <select id="acquisitionMethod">
+              <option value="network-json" selected>HAR / Network</option>
+              <option value="dom">Halaman Web / DOM</option>
+            </select>
+          </label>
+          <label>Website
+            <select id="siteProfile">
+              <option value="" selected>Otomatis dari HAR</option>
+            </select>
+          </label>
+          <div id="acquisitionMethodHelp" class="acquisition-policy-note" aria-live="polite"></div>
+          <div id="siteProfileHelp" class="ui-internal" aria-hidden="true"></div>
+
+          <div id="domSourceSetup" class="dom-source-setup">
+            <label class="dom-address-label">Alamat halaman
+              <div class="urlbar dom-source-urlbar">
+                <input id="urlInput" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://example.com" />
+                <button id="goBtn" class="primary" title="Buka alamat pada browser internal">Buka Halaman</button>
+              </div>
+            </label>
+            <div class="active-page-source">
+              <button id="useActivePageBtn" type="button" class="active-page-button wide" title="Gunakan alamat halaman yang sedang terbuka sebagai sumber proyek">Gunakan Halaman Aktif</button>
+              <small id="activePageSourceStatus">Belum dipilih.</small>
+            </div>
+          </div>
+
+          <div id="networkImportSetup" class="network-import-setup hidden">
+            <div class="network-sidebar-head"><b>File HAR / Network</b></div>
+            <button id="stageNetworkFilesBtn" type="button" class="wide primary-soft">Pilih / Ganti HAR</button>
+            <div id="networkSidebarSummary" class="network-sidebar-summary empty">Belum ada file dipilih.</div>
+            <div id="networkStageActions" class="network-stage-actions hidden">
+              <button id="clearNetworkStageBtn" type="button" class="ghost">Kosongkan</button>
+              <button id="processNetworkFilesBtn" type="button" class="primary" disabled>Proses file</button>
+            </div>
+            <label class="network-source-url-field">Source URL <span id="networkSourceUrlMode" class="optional-label"></span>
+              <input id="networkSourceUrl" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="Terdeteksi dari HAR" />
+            </label>
+
+          </div>
+          <label id="acquisitionScopeRow">Cakupan
+            <select id="acquisitionScope">
+              <option value="current">Halaman saat ini</option>
+              <option value="multiple">Beberapa halaman / kumpulan</option>
+              <option value="all">Semua yang tersedia</option>
+              <option value="site-crawl">Jelajahi URL — lanjutan</option>
+            </select>
+          </label>
+          <div id="acquisitionNavigation" class="acquisition-navigation hidden">
+            <div class="acquisition-navigation-limits">
+              <label id="acquisitionLimitWrap" class="acquisition-limit hidden">Batas langkah
+                <input id="acquisitionLimit" type="number" min="1" step="1" value="5" />
+              </label>
+              <label class="acquisition-delay">Jeda <em>detik</em>
+                <input id="delayMs" type="number" min="1" max="120" step="1" value="3" />
+              </label>
+            </div>
+            <label>Perpindahan halaman
+              <select id="paginationType">
+                <option value="none" hidden>Tidak berpindah halaman</option>
+                <option value="next">Tombol Halaman Berikutnya</option>
+                <option value="loadMore">Tombol Muat Lebih Banyak</option>
+                <option value="scroll">Scroll Otomatis / Infinite Scroll</option>
+              </select>
+            </label>
+            <div id="paginationSelectorWrap" class="hidden acquisition-pagination-selector">
+              <button id="pickPaginationBtn" class="wide" type="button">Pilih tombol navigasi</button>
+              <div id="paginationSummary" class="selection-summary empty">Belum dipilih.</div>
+              <details class="advanced-details">
+                <summary>Detail selector</summary>
+                <code id="paginationSelectorView" class="selector-view">Belum dipilih</code>
+              </details>
+            </div>
+          </div>
+          <input id="maxPages" type="hidden" value="5" />
+
+          <details class="acquisition-crawl hidden" id="crawlSettingsCard">
+            <summary>Penjelajahan URL lanjutan</summary>
+            <div class="acquisition-crawl-body">
+              <label>Cakupan URL
+                <select id="crawlScope"><option value="same-host">Host yang sama</option><option value="same-domain">Domain yang sama</option><option value="path">Jalur URL yang sama</option></select>
+              </label>
+              <div class="grid-2"><label>Kedalaman maks.<input id="crawlDepth" type="number" min="0" max="10" value="2" /></label><label>Maks. URL<input id="crawlMaxUrls" type="number" min="1" max="5000" value="100" /></label></div>
+              <label>Pola URL yang diikuti<input id="crawlInclude" placeholder="contoh: /hotel/" /></label>
+              <label>Pola URL yang dihindari<input id="crawlExclude" placeholder="contoh: /login/, /booking/" /></label>
+            </div>
+          </details>
+
+          <div id="acquisitionRecommendation" class="acquisition-recommendation" aria-live="polite"></div>
+          <div id="acquisitionFeatures" class="mode-features menu-moved" aria-live="polite"></div>
+
+          <!-- Kompatibilitas proyek lama: renderer/runner lama tetap menerima mode quick/multipage/crawl. -->
+          <div class="legacy-project-mode hidden" aria-hidden="true">
+            <select id="projectMode"><option value="quick">quick</option><option value="multipage">multipage</option><option value="crawl">crawl</option></select>
+            <div id="projectModeHelp"></div><div id="projectModeFeatures"></div>
+          </div>
+        </section>
+
+
+        <section class="card project-card target-card">
+          <div class="step-head"><span class="step-number">2</span><div><b>Target penelitian</b></div></div>
+          <label>Nama objek / proyek
+            <input id="projectName" value="Proyek Baru" placeholder="contoh: Aerotel Smile Losari" autocomplete="off" />
+            <small id="projectNameAutoHint" class="hidden"></small>
+          </label>
+          <select id="dataTarget" class="ui-internal" aria-hidden="true" tabindex="-1"><option value="reviews">Review / Ulasan</option></select>
+          <div id="sourceIdentityCard" class="source-identity-card is-empty compact-source-card">
+            <span class="source-identity-label">Sumber aktif</span>
+            <b id="sourceObjectName">Belum ada sumber</b>
+            <span id="sourceSiteName">Pilih metode dan website untuk mulai.</span>
+            <span id="sourceIdentityStatus" class="ui-internal" aria-hidden="true">Belum dideteksi</span>
+            <button id="refreshSourceBtn" type="button" class="ui-internal" aria-hidden="true" tabindex="-1">Deteksi dari halaman aktif</button>
+          </div>
+          <span id="autosaveState" class="ui-internal" aria-hidden="true">Belum ada perubahan</span>
+          <button id="workspaceBtn" class="ui-internal" type="button" aria-hidden="true" tabindex="-1">Buka Folder</button>
+        </section>
+
+        <section class="card primary-workflow-card dom-fields-card" id="domFieldsCard">
+          <div class="step-head dom-fields-head"><span class="step-number">3</span><div><b>Struktur halaman</b><small>Pilih field review.</small></div></div>
+          <div class="dom-fields-body">
+            <button id="pickFieldBtn" class="wide primary-soft">+ Pilih Data dari Halaman</button>
+            <div id="fieldList" class="field-list"></div>
+            <button id="previewBtn" class="wide ghost ui-internal" aria-hidden="true" tabindex="-1" disabled>Periksa Hasil Halaman Ini</button>
+            <details id="recordStructureDetails" class="structure-details compact-record-details hidden">
+              <summary>Batas record otomatis</summary>
+              <div id="containerSummary" class="selection-summary empty">Belum ada struktur record.</div>
+              <div id="containerQuality" class="quality-line muted">Batas record ditentukan dari field yang dipilih.</div>
+              <details class="advanced-details nested-detail">
+                <summary>Detail HTML / selector</summary>
+                <code id="itemSelectorView" class="selector-view">Belum dipilih</code>
+              </details>
+              <button id="pickItemBtn" class="wide subtle-button">Atur batas record secara manual</button>
+            </details>
+          </div>
+        </section>
+
+        <details id="reliabilityCard" class="card compact reliability-card reliability-details">
+          <summary><b>Keandalan &amp; pengaturan lanjutan</b></summary>
+          <div class="grid-2">
+            <label>Timeout (detik)<input id="timeoutMs" type="number" min="3" max="120" step="1" value="30" /></label>
+            <label>Ulangi jika gagal<input id="retryCount" type="number" min="0" max="10" value="3" /></label>
+          </div>
+        </details>
+
+        <section id="domRunAction" class="card dom-run-action">
+          <button id="startAcquisitionBtn" type="button" class="wide success">Mulai Pengambilan</button>
+        </section>
+      </aside>
+
+      <section class="center-workspace">
+        <div id="manageViewSwitch" class="context-view-switch" role="group" aria-label="Area Mengatur Data">
+          <button id="managePreparationBtn" type="button" class="active" aria-pressed="true">Persiapan</button>
+          <button id="manageFlowBtn" type="button" aria-pressed="false">Alur Proses <span id="flowTabLiveDot" class="flow-tab-live-dot" aria-hidden="true"></span></button>
+        </div>
+        <section id="browserView" class="workspace-view active browser-area">
+          <div class="browser-tab-strip">
+            <div id="browserTabs" class="browser-tabs" role="tablist" aria-label="Tab halaman web"></div>
+            <button id="newBrowserTabBtn" type="button" title="Tab baru">+</button>
+            <button id="closeBrowserTabBtn" type="button" class="close-x" title="Tutup tab aktif">×</button>
+            <div id="browserLoadState" class="browser-loading idle" aria-live="polite">
+              <span id="browserLoadText">Siap</span>
+              <i id="browserLoadBar"></i>
+            </div>
+          </div>
+          <div class="browser-toolbar">
+            <button id="backBtn" title="Kembali">←</button>
+            <button id="forwardBtn" title="Maju">→</button>
+            <button id="reloadBtn" title="Muat ulang">↻</button>
+            <div id="browserRunStatus" class="browser-run-status hidden" role="status" aria-live="polite"><span class="browser-run-dot" aria-hidden="true"></span><span id="browserRunStatusText"></span></div>
+            <div id="modePill" class="mode-pill">Mode Jelajah</div>
+            <div class="browser-zoom-control" title="Skala ini hanya mengubah halaman web, bukan antarmuka aplikasi">
+              <span class="zoom-caption">Zoom Web</span>
+              <button id="zoomOutBtn" type="button" title="Perkecil halaman">−</button>
+              <select id="browserZoomSelect" aria-label="Zoom halaman web">
+                <option value="50">50%</option><option value="67">67%</option><option value="75">75%</option><option value="80">80%</option><option value="90">90%</option><option value="100" selected>100%</option><option value="110">110%</option><option value="125">125%</option><option value="150">150%</option><option value="175">175%</option><option value="200">200%</option>
+              </select>
+              <button id="zoomInBtn" type="button" title="Perbesar halaman">+</button>
+            </div>
+            <button id="openChromeCurrentBtn" class="ghost menu-moved" title="Buka URL aktif pada instalasi Google Chrome dengan profil riset MyDataset yang persisten">Buka di Chrome</button>
+            <button id="browserToolsBtn" type="button" class="ghost browser-tools-trigger menu-moved" aria-haspopup="menu" aria-expanded="false" title="Buka alat impor tambahan">Alat Lanjutan <span aria-hidden="true">▾</span></button>
+            <span id="browserProfileBadge" class="ui-internal" aria-hidden="true">Profil browser…</span>
+          </div>
+          <div id="browserToolsPopover" class="browser-tools-popover hidden menu-moved" role="menu" aria-label="Alat lanjutan browser">
+            <button id="importNetworkJsonBtn" type="button" class="browser-tool-action" role="menuitem" title="Arahkan ke panel HAR/Network pada Persiapan">
+              <b>Buka Panel HAR / Network</b>
+              <small>Pilih file HAR.</small>
+            </button>
+          </div>
+          <div id="webviewStack" class="webview-stack">
+            <webview id="browser" class="managed-webview active" partition="persist:crawlstudio-session" allowpopups webpreferences="backgroundThrottling=no"></webview>
+          </div>
+          <section id="browserAccessNotice" class="browser-access-notice hidden" role="status" aria-live="polite">
+            <div class="access-notice-copy">
+              <span class="eyebrow">PEMERIKSAAN AKSES</span>
+              <h3 id="browserAccessTitle">Situs membatasi browser tertanam</h3>
+              <p id="browserAccessText">MyDataset menghentikan ekstraksi agar halaman pembatasan tidak ikut menjadi dataset.</p>
+            </div>
+            <div class="access-notice-actions">
+              <button id="retryBrowserAccessBtn" type="button">Muat Ulang Sesi</button>
+              <button id="openChromeAccessBtn" type="button" class="primary">Buka di Google Chrome</button>
+              <button id="importBlockedNetworkJsonBtn" type="button">Gunakan HAR/Network</button>
+              <button id="openSystemBrowserBtn" type="button" class="ghost">Browser Sistem</button>
+            </div>
+            <small class="ui-internal" aria-hidden="true">Gunakan Chrome biasa jika browser tertanam ditolak.</small>
+          </section>
+          <div id="browserEmpty" class="browser-empty">
+            <div class="empty-icon">⌁</div>
+            <h2>Buka halaman untuk mulai</h2>
+            <p>Masukkan URL.</p>
+          </div>
+          <section id="harInspectorWorkspace" class="har-inspector-workspace hidden" aria-label="Inspector HAR / Network">
+            <div class="har-inspector-header">
+              <div><span class="eyebrow">HAR / NETWORK</span><h2>Inspector sumber</h2></div>
+              <button id="harInspectorChooseBtn" type="button" class="primary">Pilih / Ganti HAR</button>
+            </div>
+            <div id="networkStagePreview" class="network-stage-preview har-inspector-preview empty"><span>Pilih file HAR.</span></div>
+          </section>
+        </section>
+
+        <section id="dataView" class="workspace-view data-workspace">
+          <div class="view-header data-view-header">
+            <div><h2>Lihat Hasil</h2></div>
+            <div class="view-header-actions"><button id="dataPreviewBtn" class="primary-soft menu-moved">Periksa Halaman</button><button id="toggleColumnsBtn" class="menu-moved" type="button" title="Beralih antara hasil cleaning dan data asli">Tabel: Hasil Cleaning</button><details class="view-export-menu menu-moved" aria-hidden="true"><summary>Ekspor</summary><div><button id="dataExportBtn" disabled>Data Siap Analisis CSV</button><button id="dataExportStandardBtn" disabled>Data Asli CSV</button><button id="dataExportXlsxBtn" disabled>Data Siap Analisis Excel</button><button id="dataExportBundleBtn" disabled>Paket Lengkap</button></div></details><button id="dataImportNetworkJsonBtn" class="hidden" aria-hidden="true">Impor HAR/Network</button></div>
+          </div>
+          <div class="ui-internal" aria-hidden="true"><b id="dataWorkspaceCount">0</b><b id="dataWorkspaceFields">0</b><b id="dataWorkspaceStructure">Belum siap</b><b id="dataWorkspaceStatus">Menunggu</b><span id="resultCount">0 baris</span></div>
+          <div class="dataset-summary-grid result-overview-grid" aria-label="Ringkasan hasil run">
+            <div><span id="runStatusLabel">Status</span><b id="runStatus">Idle</b></div>
+            <div><span id="runRawLabel">Data Asli</span><b id="runRaw">0</b></div>
+            <div><span id="runCollectedLabel">Hasil Cleaning</span><b id="runCollected">0</b></div>
+            <div title="ID sumber yang sama"><span id="runDuplicatesLabel">Duplikat Pasti</span><b id="runDuplicates">0</b></div>
+            <div id="runPossibleDuplicatesCard" title="Record berbeda dengan kemiripan kuat; tetap dipertahankan"><span id="runPossibleDuplicatesLabel">Potensi Duplikat</span><b id="runPossibleDuplicates">0</b></div>
+            <div id="runSyntheticIdsCard" class="hidden" title="ID deterministik yang dibuat MyDataset karena sumber tidak menyediakan review_id native"><span>ID Sintetis</span><b id="runSyntheticIds">0</b></div>
+          </div>
+          <div class="data-table-toolbar" aria-label="Pengaturan tampilan tabel">
+            <div class="data-mode-switch" role="group" aria-label="Jenis data yang ditampilkan">
+              <button id="dataCompactModeBtn" class="active" type="button" aria-pressed="true">Hasil Cleaning</button>
+              <button id="dataFullModeBtn" type="button" aria-pressed="false">Data Asli</button>
+              <button id="dataDuplicateModeBtn" class="hidden" type="button" aria-pressed="false">Audit Duplikat</button>
+            </div>
+            <div id="duplicateAuditTools" class="duplicate-audit-tools hidden" aria-label="Filter Audit Duplikat">
+              <div class="duplicate-audit-filters" role="group" aria-label="Status verifikasi">
+                <button type="button" class="active" data-duplicate-filter="all">Semua</button>
+                <button type="button" data-duplicate-filter="unreviewed" title="Belum Diputuskan">Belum</button>
+                <button type="button" data-duplicate-filter="confirmed" title="Benar Duplikat">Duplikat</button>
+                <button type="button" data-duplicate-filter="rejected" title="Bukan Duplikat">Bukan</button>
+              </div>
+              <label class="duplicate-audit-search"><span>Cari</span><input id="duplicateAuditSearch" type="search" placeholder="ID, reviewer, teks" autocomplete="off" /></label>
+            </div>
+            <div class="data-toolbar-actions"><div id="combinedComposition" class="combined-composition hidden" aria-label="Komposisi sumber dataset gabungan"></div><div id="duplicateViewSwitch" class="duplicate-view-switch hidden" role="group" aria-label="Tampilan Audit Duplikat"><button id="duplicateListBtn" type="button" class="active" aria-pressed="true">Daftar</button><button id="duplicateMapBtn" type="button" aria-pressed="false">Visualisasi</button></div><button id="processDetailsBtn" type="button" title="Buka rincian proses sesi aktif">Rincian Proses</button><button id="dataSourceBtn" type="button" title="Buka informasi dan file sumber">Data Sumber</button><button id="dataFolderBtn" type="button" title="Buka folder dataset aktif">Buka Folder</button></div>
+          </div>
+          <div class="data-table-area">
+            <div id="dataTableShell" class="data-table-shell"><table id="dataWorkspaceTable"><thead></thead><tbody></tbody></table></div>
+            <div id="duplicateMapWorkspace" class="duplicate-map-workspace hidden" aria-live="polite"></div>
+            <div id="dataEmpty" class="view-empty"><h3>Belum ada data</h3><p>Mulai pengambilan data untuk mengisi tabel.</p></div>
+          </div>
+        </section>
+
+        <section id="logView" class="workspace-view log-workspace">
+          <div class="view-header">
+            <div><h2>Rincian Proses</h2></div>
+            <div class="view-header-actions"><div class="process-log-switch" role="group" aria-label="Tampilan rincian proses"><button id="processLogSummaryBtn" type="button" class="active" aria-pressed="true">Ringkas</button><button id="processLogTechnicalBtn" type="button" aria-pressed="false">Detail Teknis</button></div><button id="processDetailsBackBtn" type="button">Kembali</button><button id="exportLogBtn" type="button">Ekspor Log</button></div>
+          </div>
+          <section class="log-workspace-shell">
+            <div id="processSummaryBox" class="process-summary-box"></div>
+            <pre id="logBox" class="log-box hidden"></pre>
+          </section>
+        </section>
+
+        <section id="flowView" class="workspace-view flow-workspace">
+          <div class="flow-toolbar">
+            <div class="flow-workspace-title"><b>Alur Proses</b><span>Ikuti tahap pengolahan data yang sedang berjalan.</span></div>
+            <div class="flow-controls"><button id="processDetailsFromFlowBtn" type="button">Rincian Proses</button><div class="flow-view-switch" role="group" aria-label="Mode tampilan peta"><button id="flowFollowBtn" aria-pressed="false" title="Tampilkan hanya node utama yang sedang bekerja">Fokus Aktif</button><button id="flowOverviewBtn" class="active" aria-pressed="true" title="Tampilkan seluruh node proyek">Lihat Semua</button></div><button id="flowZoomOutBtn">−</button><span id="flowZoomLabel">100%</span><button id="flowZoomInBtn">+</button><button id="flowFitBtn">Pas ke Layar</button><button id="flowResetLayoutBtn" title="Susun ulang node agar tidak bertumpuk">Rapikan</button><button id="flowDetailBtn" title="Tampilkan metadata teknis pada node">Teknis</button></div>
+          </div>
+          <div class="flow-hud">
+            <section id="flowLivePanel" class="flow-live-panel" aria-live="polite">
+              <div class="flow-live-head"><span id="flowLivePulse" class="flow-live-pulse"></span><b>Monitor Proses Langsung</b><span id="flowLiveStageBadge">Menunggu</span></div>
+              <p id="flowLiveMessage">Menunggu proses.</p>
+              <div class="flow-live-metrics"><span><span id="flowLivePageLabel">Halaman</span><b id="flowLivePage">–</b></span><span><span>Hasil</span><b id="flowLiveRows">0</b></span><span><span>Duplikat Pasti</span><b id="flowLiveDuplicates">0</b></span><span><span>Potensi Duplikat</span><b id="flowLivePossible">0</b></span></div>
+              <div class="flow-live-progress" aria-hidden="true"><i id="flowLiveProgressBar"></i></div>
+            </section>
+            <div class="flow-legend flow-status-legend" aria-label="Legenda status proses">
+              <b>Status Alur Proses</b>
+              <span class="legend-normal">○ Normal / menunggu</span>
+              <span class="legend-active">● Aktif — hijau</span>
+              <span class="legend-complete">✓ Selesai</span>
+              <span class="legend-error">× Gagal — merah</span>
+              
+            </div>
+          </div>
+          <div id="flowViewport" class="flow-viewport" tabindex="0">
+            <div id="flowStage" class="flow-stage">
+              <svg id="flowEdges" class="flow-edges" aria-hidden="true"></svg>
+              <div id="flowNodes" class="flow-nodes"></div>
+            </div>
+            <div class="flow-minimap"><div id="flowMinimapContent"></div><span>Peta</span></div>
+            <div class="flow-hint">Seret · Scroll untuk zoom · Klik node</div>
+          </div>
+          <aside id="flowInspector" class="flow-inspector hidden">
+            <div class="flow-inspector-head"><b>Detail Node</b><button id="flowInspectorClose" class="close-x">×</button></div>
+            <div id="flowInspectorBody"></div>
+          </aside>
+        </section>
+
+        <section id="historyView" class="workspace-view history-workspace">
+          <div class="view-header">
+            <div><span class="eyebrow">RIWAYAT</span><h2>Sesi &amp; Dataset Gabungan</h2></div>
+            <div class="view-header-actions history-header-actions">
+              <button id="historyRefreshBtn">Muat Ulang</button>
+              <button id="historyClearBtn" class="danger-soft" disabled title="Hapus seluruh data run dan folder Dataset; file proyek tetap aman">Bersihkan Riwayat</button>
+            </div>
+          </div>
+          <div class="history-mode-switch" role="group" aria-label="Jenis riwayat">
+            <button id="historySessionsBtn" class="active" type="button">Sesi</button>
+            <button id="historyCombinedBtn" type="button">Dataset Gabungan</button>
+          </div>
+          <section id="historyMergeBar" class="history-merge-bar">
+            <div><b>Gabungkan Dataset</b></div>
+            <input id="combinedDatasetName" type="text" placeholder="Nama Dataset Gabungan" />
+            <button id="combineSessionsBtn" type="button" class="primary" disabled>Gabungkan Sesi Terpilih</button>
+          </section>
+          <div id="historyWorkspaceList" class="history-list"></div>
+        </section>
+
+        <section id="browserMonitorDock" class="browser-monitor-dock hidden" aria-label="Monitor browser scraping">
+          <div class="browser-monitor-copy">
+            <span class="browser-monitor-live"><i aria-hidden="true"></i> Browser Monitor</span>
+            <b id="browserMonitorStatus">Pengambilan berjalan</b>
+            <small id="browserMonitorMeta">Preview read-only · browser sumber tetap aktif</small>
+          </div>
+          <div class="browser-monitor-frame" aria-hidden="true">
+            <img id="browserMonitorImage" alt="" />
+            <div id="browserMonitorPlaceholder" class="browser-monitor-placeholder">Menyiapkan preview…</div>
+          </div>
+        </section>
+      </section>
+      <div class="ui-internal hidden utility-result-dom" aria-hidden="true">
+        <div id="statusBox" class="status-box hidden">Siap.</div>
+        <button id="openFlowMonitorBtn" type="button"></button>
+        <button id="exportCsvBtn" disabled></button>
+        <button id="exportStandardCsvBtn" disabled></button>
+        <button id="exportStandardXlsxBtn" disabled></button>
+        <button id="exportJsonBtn" disabled></button>
+        <button id="exportBundleBtn" disabled></button>
+        <button id="openResultFolderBtn" disabled></button>
+        <div id="resultDataPane" class="result-pane active" role="tabpanel">
+          <div class="table-wrap"><table id="resultTable"><thead></thead><tbody></tbody></table></div>
+        </div>
+        <div id="resultLogPane" class="result-pane" role="tabpanel"></div>
+        <button id="resultDataTab" type="button" role="tab" aria-selected="true"></button>
+        <button id="resultLogTab" type="button" role="tab" aria-selected="false"></button>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="fieldDialog">
+    <form method="dialog" class="dialog-card field-dialog-card">
+      <div class="dialog-title-row">
+        <div><h3>Tambahkan Data</h3><small id="fieldPickedValue" class="muted"></small></div>
+        <span id="fieldQualityBadge" class="quality-badge">Belum diuji</span>
+      </div>
+      <div id="autoStructureNotice" class="guide-note hidden"></div>
+      <label>Nama kolom<input id="fieldNameInput" autocomplete="off" placeholder="contoh: review_text" /></label>
+      <div id="fieldPreview" class="field-preview"></div>
+      <details class="advanced-details">
+        <summary>Detail teknis HTML &amp; selector</summary>
+        <label>Selector relatif<input id="fieldSelectorInput" autocomplete="off" /></label>
+      </details>
+      <div class="grid-2">
+        <label>Nilai yang diambil
+          <select id="fieldExtractInput">
+            <option value="text">Teks yang terlihat</option><option value="href">Alamat link (href)</option><option value="src">Alamat gambar/sumber (src)</option><option value="html">HTML di dalam elemen</option><option value="value">Nilai input</option><option value="attribute">Atribut HTML tertentu</option><option value="containerAttribute">Atribut pada record</option><option value="jsonAttribute">JSON dari atribut elemen</option><option value="containerJsonAttribute">JSON dari atribut record</option>
+          </select>
+        </label>
+        <label>Jenis data
+          <select id="fieldDataTypeInput"><option value="text">Teks</option><option value="number">Angka</option><option value="date">Tanggal</option><option value="boolean">Benar/Salah</option></select>
+        </label>
+      </div>
+      <label id="attributeWrap" class="hidden">Nama atribut HTML<input id="fieldAttributeInput" placeholder="contoh: data-exposure" /></label>
+      <label id="jsonPathWrap" class="hidden">Jalur nilai JSON<input id="fieldJsonPathInput" placeholder="contoh: data.writingid" /></label>
+      <div id="identitySuggestion" class="identity-suggestion hidden">
+        <div><b>Identitas record aktif otomatis</b><span id="identitySuggestionText"></span></div>
+        <span class="auto-pill">AUTO</span>
+      </div>
+      <div class="grid-2">
+        <label>Pengolahan nilai
+          <select id="fieldTransformInput"><option value="none">Tidak diubah</option><option value="extractNumber">Ambil angka saja</option><option value="lowercase">Huruf kecil</option><option value="uppercase">Huruf besar</option></select>
+        </label>
+        <label class="checkbox-label"><input id="fieldRequiredInput" type="checkbox" /> Data wajib terisi</label>
+      </div>
+      <div id="fieldSaveHint" class="field-save-hint muted">Pilih data untuk memeriksa apakah field siap ditambahkan.</div><div class="dialog-actions"><button value="cancel">Batal</button><button id="saveFieldBtn" value="default" class="primary">Tambahkan</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="containerDialog">
+    <form method="dialog" class="dialog-card container-dialog-card">
+      <div class="dialog-title-row"><div><h3>Atur Batas Satu Record</h3><small id="containerPickedText" class="muted">Pilih struktur yang mewakili satu data lengkap.</small></div><span class="quality-badge warn">Lanjutan</span></div>
+      <div class="guide-note">Biasanya Anda tidak perlu mengatur bagian ini. MyDataset menentukan batas record otomatis dari field pertama. Gunakan mode manual hanya jika hasil otomatis keliru.</div>
+      <div id="containerCandidateList" class="candidate-list"></div>
+      <div class="dialog-actions"><button value="cancel">Batal</button><button id="useContainerBtn" value="default" class="primary">Gunakan Batas Ini</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="paginationDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-title-row"><div><h3>Konfirmasi Navigasi Data</h3><small id="paginationPickedText" class="muted"></small></div><span id="paginationQualityBadge" class="quality-badge">1 tombol</span></div>
+      <div class="guide-note">Pastikan elemen yang disorot memang digunakan untuk menuju data berikutnya setelah halaman saat ini selesai dibaca.</div>
+      <div id="paginationPreview" class="selection-summary"></div>
+      <details class="advanced-details"><summary>Detail HTML / selector</summary><code id="paginationDialogSelector" class="selector-view"></code></details>
+      <div class="dialog-actions"><button value="cancel">Batal</button><button value="default" class="primary">Gunakan Tombol</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="runsDialog"><div class="dialog-card wide-dialog"><div class="dialog-title-row"><h3>Riwayat Run</h3><button id="closeRunsBtn">Tutup</button></div><div id="runsList" class="runs-list"></div></div></dialog>
+
+  <dialog id="appearanceDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-title-row"><div><h3>Tampilan Aplikasi</h3><small class="muted">Pengaturan ini tidak mengubah zoom halaman web.</small></div></div>
+      <label>Tema aplikasi<select id="themeSelect"><option value="system">Ikuti sistem</option><option value="light">Terang</option><option value="dark">Gelap</option></select></label>
+      <label>Skala antarmuka<select id="uiScaleSelect"><option value="0.9">90%</option><option value="1">100%</option><option value="1.1">110%</option><option value="1.2">120%</option><option value="1.3">130%</option><option value="1.5">150%</option></select></label>
+      <label>Ukuran teks<select id="textSizeSelect"><option value="compact">Sedikit lebih kecil</option><option value="normal">Normal</option><option value="large">Besar</option></select></label>
+      <div class="dialog-actions"><button value="cancel">Tutup</button><button id="applyAppearanceBtn" value="default" class="primary">Terapkan</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="combinedIdentityDialog">
+    <form method="dialog" class="dialog-card combined-identity-dialog-card">
+      <div class="dialog-title-row">
+        <div><span class="eyebrow">IDENTITAS OBJEK</span><h3>Konfirmasi objek lintas sumber</h3><small class="muted">Gunakan satu nama standar bila semua sesi memang merujuk pada objek yang sama. Kosongkan untuk memakai pencocokan otomatis.</small></div>
+      </div>
+      <label>Nama objek gabungan <span class="optional-label">opsional</span>
+        <input id="combinedCanonicalAll" type="text" autocomplete="off" placeholder="contoh: MaxOne Resort Makassar" />
+        <small class="muted">Nilai ini menjadi <code>canonical_object</code> untuk seluruh sesi terpilih.</small>
+      </label>
+      <div class="combined-identity-source-title"><b>Sumber yang akan digabung</b><small>Nama asli setiap website tetap disimpan sebagai <code>source_object_name</code>.</small></div>
+      <div id="combinedIdentityRows" class="combined-identity-list"></div>
+      <div class="guide-note"><code>canonical_object</code> menyatukan identitas lintas sumber; <code>source_object_name</code> tidak diubah.</div>
+      <div class="dialog-actions"><button value="cancel">Batal</button><button id="combinedIdentityApplyBtn" value="default" class="primary">Lanjutkan Gabung</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="guideDialog">
+    <div class="dialog-card guide-card">
+      <div class="dialog-title-row guide-title-row">
+        <div><span class="eyebrow">PANDUAN PENGGUNAAN</span><h2>Mulai dari sumber sampai dataset siap dipakai</h2><small class="muted">Panduan singkat ini mengikuti alur kerja MyDataset, bukan dokumentasi teknis.</small></div>
+        <button id="guideCloseTopBtn" type="button" class="icon-close close-x" aria-label="Tutup panduan">×</button>
+      </div>
+      <div class="guide-layout">
+        <nav class="guide-nav" aria-label="Daftar isi panduan">
+          <button class="active" data-guide-target="guide-start">1. Mulai</button>
+          <button data-guide-target="guide-xhr">2. Impor HAR / Network</button>
+          <button data-guide-target="guide-dom">3. Ambil dari halaman / DOM</button>
+          <button data-guide-target="guide-results">4. Baca hasil</button>
+          <button data-guide-target="guide-export">5. Ekspor</button>
+          <button data-guide-target="guide-quality">6. Kualitas data</button>
+          <button data-guide-target="guide-help">7. Jika ada masalah</button>
+        </nav>
+        <div class="guide-content">
+          <section id="guide-start" class="guide-section">
+            <h3>1. Mulai proyek</h3>
+            <ol>
+              <li>Pilih <b>Metode Akuisisi</b>. HAR / Network tetap menjadi metode yang direkomendasikan untuk dataset besar.</li>
+              <li><b>HAR / Network</b> mendukung Traveloka, Tiket, Agoda, Trip, dan Booking.</li>
+              <li><b>Halaman Web / DOM</b> tersedia kembali untuk Tiket, Agoda, dan Trip sebagai metode alternatif/interaktif.</li>
+              <li>Isi atau konfirmasi <b>Nama objek / proyek</b> sebelum proses dijalankan.</li>
+            </ol>
+            <div class="guide-callout"><b>Aturan dukungan</b><span>HAR/Network = Traveloka, Tiket, Agoda, Trip, Booking. DOM = Tiket, Agoda, Trip. Traveloka dan Booking tidak dijalankan melalui DOM.</span></div>
+          </section>
+          <section id="guide-xhr" class="guide-section">
+            <h3>2. HAR / Network — Traveloka, Tiket, Agoda, Trip, Booking</h3>
+            <ol>
+              <li>Buka halaman review di Chrome/Edge, tekan <b>F12 → Network</b>, aktifkan Preserve log bila perlu, dan bersihkan log sebelum pengambilan data.</li>
+              <li>Lakukan pagination seperlunya. HAR hanya dapat memproses response yang benar-benar terekam.</li>
+              <li>Klik kanan pada daftar Network lalu pilih <b>Save all as HAR with content</b>.</li>
+              <li>Kembali ke MyDataset dan pilih file HAR. Adapter akan dideteksi otomatis dari endpoint review.</li>
+              <li>Periksa coverage dan sumber yang terdeteksi, lalu tekan <b>Proses file</b>.</li>
+            </ol>
+            <p class="guide-note-inline">Untuk review bahasa asing, MyDataset mengutamakan versi Bahasa Indonesia jika response menyediakan terjemahan Indonesia. Jika tidak tersedia, teks asli tetap digunakan.</p>
+          </section>
+          <section id="guide-dom" class="guide-section">
+            <h3>3. Halaman Web / DOM — Tiket, Agoda, Trip</h3>
+            <ol>
+              <li>Pilih <b>Halaman Web / DOM</b> lalu pilih Tiket, Agoda, atau Trip.</li>
+              <li>Buka halaman review pada browser MyDataset dan tekan <b>Gunakan Halaman Aktif</b>.</li>
+              <li>Pilih field review. MyDataset akan mencari batas satu record dan memvalidasi selector secara semantik.</li>
+              <li>Untuk banyak halaman, pilih tombol berikutnya/load more/scroll dan tentukan batas langkah atau <b>Semua yang tersedia</b>.</li>
+              <li>Periksa preview sebelum run. Jika website mengubah state halaman atau membatasi browser tertanam, hasil yang sudah aman dipertahankan dan run dapat dihentikan sebagai parsial.</li>
+            </ol>
+            <p class="guide-note-inline">DOM bergantung pada struktur halaman dan sesi browser. Untuk pengambilan data skala besar, gunakan HAR / Network bila tersedia.</p>
+          </section>
+          <section id="guide-results" class="guide-section">
+            <h3>4. Memahami hasil</h3>
+            <div class="guide-grid">
+              <div><b>Hasil Cleaning</b><span>Record setelah pemeriksaan identitas.</span></div>
+              <div><b>Data Asli</b><span>Record sebagaimana diperoleh dari sumber.</span></div>
+              <div><b>Audit Duplikat</b><span>Duplikat Pasti dan Potensi Duplikat.</span></div>
+            </div>
+            <p>Setiap run menyimpan metadata <b>website</b>, <b>metode akuisisi</b>, Source URL, waktu, dan status penyelesaian. Run antarwebsite tidak digabung otomatis.</p>
+          </section>
+          <section id="guide-export" class="guide-section">
+            <h3>5. Ekspor</h3>
+            <ul>
+              <li><b>Data Siap Analisis</b>: skema standar untuk analisis.</li>
+              <li><b>Data Asli</b>: record sebelum cleaning.</li>
+              <li><b>Audit Duplikat</b>: record yang perlu diperiksa.</li>
+              <li><b>Paket Lengkap</b>: dataset, log, metadata run, dan sumber network bila tersedia.</li>
+            </ul>
+          </section>
+          <section id="guide-quality" class="guide-section">
+            <h3>6. Kualitas dan provenance</h3>
+            <ul>
+              <li>Nilai yang tidak tersedia dari sumber dibiarkan kosong, bukan ditebak.</li>
+              <li>HAR mempertahankan Source URL, response count, review count, endpoint, pagination, serta metadata coverage yang tersedia dari masing-masing sumber.</li>
+              <li>DOM mempertahankan URL halaman, struktur record, selector field, pagination, dan checkpoint run yang benar-benar digunakan.</li>
+              <li>Traveloka, Tiket, Agoda, Trip, dan Booking memakai adapter Network terpisah; DOM memiliki pipeline selector tersendiri untuk Tiket, Agoda, dan Trip.</li>
+              <li>Gunakan <b>Alur Proses</b> untuk mengikuti tahap aktif dan <b>Rincian Proses</b> bila membutuhkan log teknis.</li>
+            </ul>
+          </section>
+          <section id="guide-help" class="guide-section">
+            <h3>7. Jika terjadi kegagalan</h3>
+            <p>Jika pengambilan data berhenti, MyDataset menampilkan dialog yang menjelaskan <b>tahap</b>, <b>kode kegagalan</b>, kemungkinan penyebab, dan jumlah data yang sudah aman.</p>
+            <ul>
+              <li><b>Coba Lagi</b>: melanjutkan dari checkpoint terakhir jika tersedia, bukan menghapus data yang sudah berhasil.</li>
+              <li><b>Hentikan Proses</b>: menyimpan run sebagai hasil parsial/terhenti dan mempertahankan data yang sudah terkumpul.</li>
+              <li>Pada Alur Proses, node <b>hijau</b> berarti sedang aktif dan node <b>merah</b> berarti gagal.</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+      <div class="dialog-actions"><button id="guideCloseBtn" type="button">Tutup</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="flowGuideDialog">
+    <div class="dialog-card guide-card">
+      <div class="dialog-title-row guide-title-row">
+        <div><span class="eyebrow">CARA KERJA SISTEM</span><h2>Bagaimana MyDataset mengolah review</h2><small class="muted">Ringkasan proses HAR / Network dan Halaman Web / DOM.</small></div>
+        <button id="flowGuideCloseTopBtn" type="button" class="icon-close close-x" aria-label="Tutup">×</button>
+      </div>
+      <div class="guide-layout">
+        <nav class="guide-nav" aria-label="Daftar isi cara kerja sistem">
+          <button class="active" data-guide-target="flow-guide-intro">1. Gambaran</button>
+          <button data-guide-target="flow-guide-har">2. HAR / Network</button>
+          <button data-guide-target="flow-guide-dom">3. Halaman Web / DOM</button>
+          <button data-guide-target="flow-guide-duplicate">4. Pemeriksaan duplikat</button>
+          <button data-guide-target="flow-guide-detail">5. Alur & rincian proses</button>
+        </nav>
+        <div class="guide-content">
+          <section id="flow-guide-intro" class="guide-section">
+            <h3>1. Gambaran</h3>
+            <p>Setiap pengambilan data mengikuti pola yang sama: sumber dibaca, record diekstrak, data divalidasi, duplikat diperiksa, lalu hasil disimpan.</p>
+            <div class="guide-callout"><b>Alur utama</b><span>Sumber → Ekstraksi → Validasi → Normalisasi → Pemeriksaan Duplikat → Dataset.</span></div>
+          </section>
+          <section id="flow-guide-har" class="guide-section">
+            <h3>2. HAR / Network</h3>
+            <p>MyDataset membaca HAR Chrome, mengenali Traveloka, Tiket, Agoda, Trip, atau Booking, memeriksa endpoint review dan pagination, lalu membentuk record sumber tanpa bergantung pada DOM halaman.</p>
+          </section>
+          <section id="flow-guide-dom" class="guide-section">
+            <h3>3. Halaman Web / DOM</h3>
+            <p>MyDataset membaca halaman aktif melalui browser internal, memvalidasi batas record dan field yang dipilih, mengikuti pagination bila diperlukan, lalu masuk ke pipeline normalisasi dan audit yang sama. DOM tersedia untuk Tiket, Agoda, dan Trip.</p>
+          </section>
+          <section id="flow-guide-duplicate" class="guide-section">
+            <h3>4. Pemeriksaan duplikat</h3>
+            <div class="guide-grid">
+              <div><b>Duplikat Pasti</b><span>Identitas sumber sama. Record duplikat dapat dikeluarkan.</span></div>
+              <div><b>Potensi Duplikat</b><span>ID berbeda tetapi mempunyai kemiripan kuat. Record tetap dipertahankan untuk audit.</span></div>
+            </div>
+          </section>
+          <section id="flow-guide-detail" class="guide-section">
+            <h3>5. Alur & Rincian Proses</h3>
+            <p><b>Alur Proses</b> menunjukkan tahap yang sedang aktif. <b>Rincian Proses</b> menampilkan log teknis jika pengguna perlu memeriksa kegagalan atau audit run.</p>
+          </section>
+        </div>
+      </div>
+      <div class="dialog-actions"><button id="flowGuideCloseBtn" type="button">Tutup</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="acquisitionFailureDialog" class="failure-dialog">
+    <div class="dialog-card failure-dialog-card">
+      <div class="dialog-title-row failure-title-row">
+        <div><span class="eyebrow danger-text">PROSES TERHENTI</span><h2 id="failureDialogTitle">Pengambilan data mengalami masalah</h2><small id="failureDialogMethod" class="muted">Metode akuisisi</small></div>
+        <span class="failure-symbol" aria-hidden="true">×</span>
+      </div>
+      <div class="failure-summary-grid">
+        <div><span>Tahap</span><b id="failureDialogStage">-</b></div>
+        <div><span>Kode</span><b id="failureDialogCode">INTERNAL_ERROR</b></div>
+        <div><span>Data aman</span><b id="failureDialogCollected">0 record</b></div>
+      </div>
+      <section class="failure-message"><b>Masalah</b><p id="failureDialogMessage">Terjadi kegagalan.</p></section>
+      <section class="failure-causes"><b>Kemungkinan penyebab</b><ul id="failureDialogCauses"></ul></section>
+      <div class="failure-checkpoint-note" id="failureDialogCheckpoint">Data yang sudah berhasil disimpan tetap dipertahankan pada checkpoint/riwayat.</div>
+      <div id="failureDialogRecommendation" class="failure-recommendation hidden"></div>
+      <div class="dialog-actions failure-actions">
+        <button id="failureStopBtn" type="button" class="danger-button">Hentikan Proses</button>
+        <button id="failureRetryBtn" type="button" class="primary">Coba Lagi</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="aboutDialog">
+    <div class="dialog-card about-card">
+      <div class="about-logo"><div class="brand-mark large"><span></span><span></span><span></span></div></div>
+      <h2>MyDataset</h2>
+      <p>Kumpulin dan rapikan data web untuk <em>dataset</em>-mu</p>
+      <div class="about-meta"><div><span>Versi</span><b id="aboutVersion">1.1.6</b></div><div><span>Dibuat oleh</span><b>Ahmad Asyhari</b></div></div>
+      <p class="muted about-note">Pilih data yang dibutuhkan, rapikan hasilnya, lalu ekspor menjadi dataset yang siap digunakan.</p>
+      <div class="dialog-actions"><button id="aboutCloseBtn">Tutup</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="resetDialog">
+    <form method="dialog" class="dialog-card reset-dialog-card">
+      <div class="dialog-title-row"><div><h3>Mulai ulang</h3><small class="muted">Pilih apa yang ingin dibersihkan.</small></div></div>
+      <div class="reset-choice-list">
+        <label class="reset-choice selected" id="resetResultsChoice"><input type="radio" name="resetScope" value="results" checked><div><b>Bersihkan hasil</b><span>Hapus tabel hasil, preview, dan log. Pengaturan proyek tetap.</span></div></label>
+        <label class="reset-choice" id="resetProjectChoice"><input type="radio" name="resetScope" value="project"><div><b>Proyek baru</b><span>Hapus konfigurasi proyek dan hasil aktif untuk memulai dari awal.</span></div></label>
+      </div>
+      <div id="resetProjectOptions" class="reset-options hidden"><label class="reset-check"><input id="closeOldPagesInput" type="checkbox" checked><span>Tutup semua halaman web proyek lama</span></label><label class="reset-check"><input id="abandonRecoveryInput" type="checkbox" checked><span>Jangan tampilkan pemulihan run lama</span></label></div>
+      <div class="reset-footnote">File yang sudah diekspor tidak ikut dihapus.</div>
+      <div class="dialog-actions"><button value="cancel">Batal</button><button id="confirmResetBtn" value="confirm" class="danger-button">Bersihkan</button></div>
+    </form>
+  </dialog>
+
+  <script src="../shared/acquisition-policy.js"></script>
+  <script src="content-expansion.js"></script>
+  <script src="page-picker.js"></script>
+  <script src="flow-canvas.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

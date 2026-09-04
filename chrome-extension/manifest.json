@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "MyDataset Capture",
+  "version": "1.0.0",
+  "description": "Pendamping MyDataset untuk menangkap endpoint review Traveloka dan Tiket dari Chrome/Edge DevTools Network.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "action": {
+    "default_title": "MyDataset Capture",
+    "default_popup": "popup.html"
+  },
+  "devtools_page": "devtools.html",
+  "icons": {
+    "128": "icon.png"
+  }
+}
