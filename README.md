@@ -36,8 +36,6 @@ MyDataset adalah aplikasi untuk mengumpulkan, membersihkan, mengaudit, menggabun
 | Trip | Tidak | Ya | `getHotelCommentInfo` |
 | Booking | Ya | Tidak | GraphQL `ReviewList` |
 
-Nama website pada aplikasi ditulis sebagai **Traveloka, Tiket, Agoda, Trip, dan Booking**. MyDataset bukan aplikasi resmi dari platform-platform tersebut.
-
 ## Metode 1 - HAR / Network
 Metode ini hanya dapat digunakan pada data web `HAR / Network` Traveloka dan Booking 
 
