@@ -143,11 +143,11 @@ mydataset-review-standard-v8
 - `source_url`
 - `acquisition / session / run provenance`
 
-### Persyaratan minimum untuk file exe
+### Persyaratan minimum untuk file exe/zip
 - Windows 10/11 x64
-"`Note : Jika file exe gagal dijalankan, coba download versi zip. tapi harus perhatikan persyaratan yang tertera`"
+"`Note : Jika file exe gagal dijalankan, coba download versi zip`"
 
-### Persyaratan minimum untuk file zip
+### Persyaratan minimum untuk source code
 - Windows 10/11 x64
 - **Node.js 22.12.0 atau lebih baru**
 - npm
