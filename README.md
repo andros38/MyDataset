@@ -27,7 +27,7 @@ MyDataset adalah aplikasi untuk mengumpulkan, membersihkan, mengaudit, menggabun
 
 Nama website pada aplikasi ditulis sebagai **Traveloka, Tiket, Agoda, Trip, dan Booking**. MyDataset bukan aplikasi resmi dari platform-platform tersebut.
 
-## Metode 1 — HAR / Network
+## Metode 1 - HAR / Network
 Metode ini hanya dapat digunakan pada data web `HAR / Network` Traveloka dan Booking 
 
 Alur umum:
@@ -42,7 +42,7 @@ Alur umum:
 
 MyDataset hanya dapat memproses response yang benar-benar terdapat di dalam HAR sesuai dengan kategori yang sudah di atur. File HAR yang berhasil diimpor tidak akan mengelola data diluar dari data yang aplikasi butuhkan.
 
-## Metode 2 — Halaman Web / DOM
+## Metode 2 - Halaman Web / DOM
 Metode DOM ini hanya tersedia untuk Tiket, Agoda, dan Trip
 
 Alur umum:
@@ -59,31 +59,27 @@ Alur umum:
 ## Coverage dan keterbatasan sumber
 
 MyDataset membedakan beberapa kondisi penyelesaian run, antara lain:
-- `completed` — akhir sumber dapat diverifikasi.
-- `completed_step_limit` — batas langkah pengguna tercapai; akhir sumber belum diklaim.
-- `completed_source_limit` — sumber berhenti pada batas retrieval yang teramati.
+- `completed` artinya akhir sumber dapat diverifikasi.
+- `completed_step_limit` artinya batas langkah pengguna tercapai; akhir sumber belum diklaim.
+- `completed_source_limit` artinya sumber berhenti pada batas retrieval yang teramati.
 
 Terkadang pada website, jumlah yang dilaporkan website tidak selalu sama dengan jumlah review yang benar-benar ditampilkan. Sebuah website dapat menyaring, menyembunyikan, atau membatasi review pada listing/endpoint tertentu sehingga ada beberapa komentar yang tidak dapat diakses. Jadi MyDataset tidak mengarang record yang tidak tersedia dari sumber dan hanya akan mengambil data yang dapat dilihat tersebut.
 
 ## Provenance dan identitas review
-
 MyDataset mempertahankan informasi provenance agar data hasil tidak kehilangan konteks sumber.
-Jika Tiket tidak menyediakan ID native untuk sebuah review, MyDataset dapat menghasilkan fallback deterministik:
+Jika Tiket tidak menyediakan ID native untuk sebuah review, MyDataset dapat menghasilkan fallback deterministik :
 ```text
 synthetic:tiket:<hash>
 ```
 Prefix `synthetic:` sengaja dipertahankan agar ID tersebut tidak disalahartikan sebagai ID asli website.
 
 ## Audit Identitas
-Audit identitas menyimpan jumlah:
-- native review ID;
-- synthetic review ID;
-- missing review ID.
+Audit identitas menyimpan jumlah native review ID, synthetic review ID dan missing review ID.
 
 ## Audit duplikat
-- Duplikat hanya dipisahkan bila identitas yang cukup kuat menunjukkan record yang sama.
-- Kemiripan teks, reviewer, rating, atau tanggal diperlakukan sebagai Potensi Duplikat dan tidak dihapus otomatis.
-- Dataset Gabungan membedakan kandidat intra-session dan lintas sumber.
+- Duplikat hanya dipisahkan bila identitas yang cukup kuat menunjukkan record yang sama
+- Kemiripan teks, reviewer, rating, atau tanggal diperlakukan sebagai Potensi Duplikat dan tidak dihapus otomatis
+- Dataset Gabungan membedakan kandidat intra-session dan lintas sumber
 
 ## Rating dan normalisasi
 - `rating_score` dan `rating_max` disimpan terpisah.
@@ -138,7 +134,7 @@ mydataset-review-standard-v8
 
 ### Persyaratan minimum untuk file exe
 - Windows 10/11 x64
-`Jika file exe gagal dijalankan, coba download versi zip. tapi harus perhatikan persyaratan yang tertera`
+"`Note : Jika file exe gagal dijalankan, coba download versi zip. tapi harus perhatikan persyaratan yang tertera`"
 
 ### Persyaratan minimum untuk file zip
 - Windows 10/11 x64
