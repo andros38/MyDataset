@@ -2,6 +2,17 @@
 
 MyDataset adalah aplikasi untuk mengumpulkan, membersihkan, mengaudit, menggabungkan, dan mengekspor data review web menjadi dataset terstruktur untuk kebutuhan analisis dan penelitian. MyDataset dirancang sebagai perangkat bantu pengumpulan dan pengolahan dataset. Pengguna bertanggung jawab memastikan pengambilan dan penggunaan data sesuai dengan ketentuan situs, izin akses, kebijakan privasi, serta kebutuhan etika penelitian yang berlaku. Aplikasi tidak dimaksudkan untuk melewati autentikasi, pembatasan akses, atau mekanisme proteksi website.
 
+## Preview
+<p>
+  <img src="preview/img0.png" width="300">
+  <img src="preview/img1.png" width="300">
+  <img src="preview/img2.png" width="300">
+  <img src="preview/img3.png" width="300">
+  <img src="preview/img4.png" width="300">
+  <img src="preview/img5.png" width="300">
+  <img src="preview/img6.png" width="300">
+</p>
+
 ## Fitur utama
 
 - Pengambilan data melalui `HAR / Network` atau `Halaman Web / DOM` untuk sumber yang didukung
